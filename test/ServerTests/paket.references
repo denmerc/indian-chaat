@@ -1,0 +1,6 @@
+Microsoft.DotNet.Watcher.Tools
+FSharp.Core
+Expecto
+Servicestack
+ServiceStack.Common
+ServiceStack.Kestrel

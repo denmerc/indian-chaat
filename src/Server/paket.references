@@ -1,0 +1,5 @@
+FSharp.Core
+Microsoft.AspNetCore
+Servicestack
+ServiceStack.Common
+Microsoft.DotNet.Watcher.Tools
