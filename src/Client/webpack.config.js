@@ -25,7 +25,7 @@ module.exports = {
     entry: resolve('./Elmish.fsproj'),
     output: {
         filename: 'bundle.js',
-        path: resolve('./public'),
+        path: resolve('./public/js'),
     },
     resolve: {
         modules: [

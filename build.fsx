@@ -139,17 +139,17 @@ Target "PublishApp" (fun _ ->
     if result <> 0 then failwith "Publish failed"
 
     let clientDir = deployDir </> "wwwroot"
-    let publicDir = clientDir </> "public"
+    // let publicDir = clientDir </> "public"
     let jsDir = clientDir </> "js"
     let cssDir = clientDir </> "css"
     let imageDir = clientDir </> "Images"
 
-    !! "src/Client/public/**/*.*" |> CopyFiles publicDir
-    !! "src/Client/js/**/*.*" |> CopyFiles jsDir
-    !! "src/Client/css/**/*.*" |> CopyFiles cssDir
-    !! "src/Client/Images/**/*.*" |> CopyFiles imageDir
+    // !! "src/Client/public/**/*.*" |> CopyFiles publicDir
+    !! "src/Client/public/js/**/*.*" |> CopyFiles jsDir
+    !! "src/Client/public/css/**/*.*" |> CopyFiles cssDir
+    !! "src/Client/public/Images/**/*.*" |> CopyFiles imageDir
 
-    "src/Client/index.html" |> CopyFile clientDir
+    // "src/Client/index.html" |> CopyFile clientDir
 )
 
 //-------------------------
