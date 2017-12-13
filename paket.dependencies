@@ -7,6 +7,12 @@ nuget Microsoft.AspNetCore
 nuget Servicestack
 nuget ServiceStack.Common
 nuget ServiceStack.Kestrel
+nuget Fable.Elmish.HMR
+nuget Fable.Core
+nuget Fable.Elmish.React
+nuget Fable.Elmish.Browser
+nuget Fable.Elmish.Debugger
+nuget Fable.PowerPack prerelease
 
 nuget Expecto
 

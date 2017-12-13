@@ -14,6 +14,8 @@ open Fake.ReleaseNotesHelper
 let serverPath = "./src/Server/" |> FullName
 let serverTestsPath = "./test/ServerTests/" |> FullName
 
+let clientPath = "./src/Client" |> FullName
+
 let dockerUser = getBuildParam "DockerUser"
 let dockerPassword = getBuildParam "DockerPassword"
 let dockerLoginServer = getBuildParam "DockerLoginServer"
@@ -61,7 +63,7 @@ let platformTool tool winTool =
     |> function Some t -> t | _ -> failwithf "%s not found" tool
 
 let nodeTool = platformTool "node" "node.exe"
-let npmTool = platformTool "npm" "npm.cmd"
+// let npmTool = platformTool "npm" "npm.cmd"
 let yarnTool = platformTool "yarn" "yarn.cmd"
 
 do if not isWindows then
@@ -91,7 +93,7 @@ Target "Clean" (fun _ ->
     ++ "test/**/obj/*.nuspec"
     |> DeleteFiles
 
-    CleanDirs ["bin"; "temp"; "docs/output"; deployDir]
+    CleanDirs ["bin"; "temp"; "docs/output"; deployDir; Path.Combine(clientPath,"public/bundle")]
 )
 
 Target "InstallDotNetCore" (fun _ ->
@@ -108,6 +110,19 @@ Target "BuildServerTests" (fun _ ->
     runDotnet serverTestsPath "build"
 )
 
+Target "InstallClient" (fun _ ->
+    printfn "Node version:"
+    run nodeTool "--version" __SOURCE_DIRECTORY__
+    printfn "Yarn version:"
+    run yarnTool "--version" __SOURCE_DIRECTORY__
+    run yarnTool "install --frozen-lockfile" __SOURCE_DIRECTORY__
+)
+
+Target "BuildClient" (fun _ ->
+    runDotnet clientPath "restore"
+    runDotnet clientPath "fable webpack -- -p"
+)
+
 //-----------------------------
 // Run tests
 Target "RunServerTests" (fun _ ->
@@ -122,16 +137,30 @@ Target "PublishApp" (fun _ ->
             info.WorkingDirectory <- serverPath
             info.Arguments <- "publish -c Release -o \"" + FullName deployDir + "\"") TimeSpan.MaxValue
     if result <> 0 then failwith "Publish failed"
+
+    let clientDir = deployDir </> "wwwroot"
+    let publicDir = clientDir </> "public"
+    let jsDir = clientDir </> "js"
+    let cssDir = clientDir </> "css"
+    let imageDir = clientDir </> "Images"
+
+    !! "src/Client/public/**/*.*" |> CopyFiles publicDir
+    !! "src/Client/js/**/*.*" |> CopyFiles jsDir
+    !! "src/Client/css/**/*.*" |> CopyFiles cssDir
+    !! "src/Client/Images/**/*.*" |> CopyFiles imageDir
+
+    "src/Client/index.html" |> CopyFile clientDir
 )
 
 //-------------------------
 // Run web app
 
 let ipAddress = "localhost"
-let port = 5000
+let port = 8080
 
 
 Target "Run" (fun _ ->
+    runDotnet clientPath "restore"
     runDotnet serverTestsPath "restore"
 
     let unitTestsWatch = async {
@@ -143,31 +172,36 @@ Target "Run" (fun _ ->
 
         if result <> 0 then failwith "Website shut down." }
 
+    let fablewatch = async { runDotnet clientPath "fable webpack-dev-server" }
     let openBrowser = async {
         System.Threading.Thread.Sleep(5000)
         Diagnostics.Process.Start("http://"+ ipAddress + sprintf ":%d" port) |> ignore }
 
-    Async.Parallel [| unitTestsWatch; openBrowser |]
+    Async.Parallel [| unitTestsWatch; fablewatch;openBrowser |]
     |> Async.RunSynchronously
     |> ignore
 )
+
+
 
 Target "Build" DoNothing
 Target "All" DoNothing
 
 "Clean"
 ==> "InstallDotNetCore"
+==> "InstallClient"
 ==> "BuildServer"
+==> "BuildClient"
 ==> "BuildServerTests"
 ==> "RunServerTests"
 ==> "PublishApp"
 ==> "All"
 
 
-"InstallDotNetCore"
+"InstallClient"
 ==> "Run"
 
-"BuildServer"
+"BuildClient"
   ==> "Build"
 
 RunTargetOrDefault "All"
