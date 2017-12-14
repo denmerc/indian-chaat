@@ -1,28 +1,79 @@
 module Counter.View
 
 open Fable.Core
+open JsInterop
 open Fable.Helpers.React
-open Fable.Helpers.React.Props
+open Props
 open Types
+open Fulma.Elements.Form
+open Fulma.Common
+open Fulma.Elements
 
-let simpleButton txt action dispatch =
-  div
-    [ ClassName "column is-narrow" ]
-    [ a
-        [ ClassName "button"
-          OnClick (fun _ -> action |> dispatch) ]
-        [ str txt ] ]
+
 
 let root model dispatch =
-  div
-    [ ClassName "columns is-vcentered" ]
-    [ div [ ClassName "column" ] [ ]
-      div
-        [ ClassName "column is-narrow"
-          Style
-            [ CSSProp.Width "170px" ] ]
-        [ str (sprintf "Counter value: %i" model) ]
-      simpleButton "+1" Increment dispatch
-      simpleButton "-1" Decrement dispatch
-      simpleButton "Reset" Reset dispatch
-      div [ ClassName "column" ] [ ] ]
+  div [] [
+    Content.content [] [
+      p [] [
+        for m in model.ServerMessages do
+          yield span [ClassName m.color][str m.data]
+      ]
+    ]
+
+    br []
+    br []
+    p [ClassName (model.SpanCls.ToString())] [str (sprintf "local string %s" model.LocalStr)]
+
+
+    Control.control_div [] [
+      Radio.radio [CustomClass "red"] [
+        Radio.input [
+          Radio.Input.name "color"
+          Radio.Input.props [
+              Checked (model.SpanCls = Red)
+              OnChange (fun _ -> Red |> ChangeColor |> dispatch)
+              ]
+          ]
+        str "Red"
+      ]
+      Radio.radio [CustomClass "green"] [
+        Radio.input [
+          Radio.Input.name "color"
+          Radio.Input.props [
+              Checked (model.SpanCls = Green)
+              OnChange (fun _ -> Green |> ChangeColor |> dispatch)
+              ]
+          ]
+        str "Green"
+      ]
+      Radio.radio [CustomClass "yellow"] [
+        Radio.input [
+          Radio.Input.name "color"
+          Radio.Input.props [
+              Checked (model.SpanCls = Yellow)
+              OnChange (fun _ -> Yellow |> ChangeColor |> dispatch)
+              ]
+          ]
+        str "Yellow"
+      ]
+      Radio.radio [CustomClass "blue"] [
+        Radio.input [
+            Radio.Input.name "color"
+            Radio.Input.props [
+              Checked (model.SpanCls = Blue)
+              OnChange (fun _ -> Blue |> ChangeColor |> dispatch)
+              ]
+          ]
+        str "Blue"
+      ]
+    ]
+
+    Control.control_div [] [
+      Input.input [
+        Input.typeIsText
+        Input.placeholder "AddSomething"
+        Input.value model.LocalStr
+        Input.props [OnChange (fun ev -> !!ev.target?value |> ChangeStr |> dispatch)]
+      ]
+    ]
+  ]

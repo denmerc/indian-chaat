@@ -13,6 +13,9 @@ nuget Fable.Elmish.React
 nuget Fable.Elmish.Browser
 nuget Fable.Elmish.Debugger
 nuget Fable.PowerPack prerelease
+nuget Fulma prerelease
+nuget Fulma.Extensions prerelease
+
 
 nuget Expecto
 

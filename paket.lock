@@ -101,6 +101,13 @@ NUGET
       System.Threading.Thread (>= 4.0) - restriction: && (< net45) (>= netstandard1.6)
       System.Threading.ThreadPool (>= 4.0.10) - restriction: && (< net45) (>= netstandard1.6)
       System.Threading.Timer (>= 4.0.1) - restriction: && (< net45) (>= netstandard1.6)
+    Fulma (1.0.0-beta-005)
+      Fable.Core (>= 1.2.4) - restriction: >= netstandard1.6
+      Fable.React (>= 1.2.1) - restriction: >= netstandard1.6
+    Fulma.Extensions (0.1.0-beta-009)
+      Fable.Core (>= 1.2.4) - restriction: >= netstandard1.6
+      Fable.React (>= 1.2.1) - restriction: >= netstandard1.6
+      Fulma (>= 1.0.0-beta-005) - restriction: >= netstandard1.6
     Libuv (1.10) - restriction: >= netstandard2.0
       Microsoft.NETCore.Platforms (>= 1.0.1) - restriction: >= netstandard1.0
     Microsoft.AspNetCore (2.0.1)

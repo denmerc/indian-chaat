@@ -1,9 +1,9 @@
 module Home.View
 
 open Fable.Core
-open Fable.Core.JsInterop
+open JsInterop
 open Fable.Helpers.React
-open Fable.Helpers.React.Props
+open Props
 open Types
 
 let root model dispatch =

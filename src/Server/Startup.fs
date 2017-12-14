@@ -26,7 +26,6 @@ type AppHost() =
                                 allowCredentials = true,
                                 allowedHeaders = "Content-Type, Allow, Authorization"
             ))
-            container.Register<IChatHistory>(fun _ -> MemoryChatHistory() :> IChatHistory) |> ignore
             ignore()
 
 
