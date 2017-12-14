@@ -14,7 +14,7 @@ open Global
 importAll "./sass/main.sass"
 
 open Fable.Helpers.React
-open Fable.Helpers.React.Props
+open Props
 
 let menuItem label page currentPage =
     li
@@ -33,7 +33,7 @@ let menu currentPage =
       ul
         [ ClassName "menu-list" ]
         [ menuItem "Home" Home currentPage
-          menuItem "Chat sample" Counter currentPage
+          menuItem "Chat sample" Chat currentPage
           menuItem "About" Page.About currentPage ] ]
 
 let root model dispatch =
@@ -41,7 +41,7 @@ let root model dispatch =
   let pageHtml =
     function
     | Page.About -> Info.View.root
-    | Counter -> Counter.View.root model.counter (CounterMsg >> dispatch)
+    | Chat -> Chat.View.root model.chat (ChatMsg >> dispatch)
     | Home -> Home.View.root model.home (HomeMsg >> dispatch)
 
   div
@@ -68,8 +68,14 @@ open Elmish.React
 open Elmish.Debug
 open Elmish.HMR
 
+let subscription (model:Model)=
+    Cmd.batch [
+      Cmd.map ChatMsg Chat.State.subscribe
+    ]
+
 // App
 Program.mkProgram init update root
+|> Program.withSubscription subscription
 |> Program.toNavigable (parseHash pageParser) urlUpdate
 #if DEBUG
 |> Program.withDebugger

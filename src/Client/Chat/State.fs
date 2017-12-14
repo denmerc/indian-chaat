@@ -1,4 +1,4 @@
-module Counter.State
+module Chat.State
 
 open Elmish
 open Types
@@ -7,34 +7,61 @@ open Fable.Import
 open IndianChaat
 open SSClient
 open System
+open System.Collections.Generic
+open JsInterop
 
 
 
 let [<Import("*","@servicestack\client")>] SSClient: SSClient.IExports = jsNative
 
-let client = SSClient.JsonServiceClient.Create("http://localhost:5000")
+let baseUrl = "http://localhost:5000"
+
+let subscribe =
+        let socketSubscription dispatch = 
+            let eventSourceOptions = createEmpty<IEventSourceOptions>
+            eventSourceOptions.handlers <- createObj [
+                // "onConnect" ==> fun (sub : ServerEventConnect) -> printfn "onConnect: %A" sub.displayName
+                // "onJoin" ==> fun (msg: ServerEventJoin) -> printfn "onJoin: %A" msg.displayName
+                // "onLeave" ==> fun (msg: ServerEventLeave) -> printfn "onLeave: %A" msg.displayName
+                // "onUpdate" ==> fun (msg : ServerEventUpdate) -> printfn "onUpdate %A" msg.displayName
+                "onMessage" ==> fun (msg: ServerEventMessage) -> printfn "onMessage %A" msg.json
+                "chat" ==> fun (msg : OutPutMessages) ->
+                                msg |> (SSESuccessMessages >> dispatch)
+            ] |> Some |> Some
+
+            let channels = [|"home"; ""|]
+            SSClient.ServerEventsClient.Create(baseUrl
+            , new List<string>(channels)
+            , eventSourceOptions
+            ).start() |> ignore
+        Cmd.ofSub socketSubscription
+
+
+
+let client = SSClient.JsonServiceClient.Create(baseUrl)
+
+
 
 let init () : Model * Cmd<Msg> =
-  {LocalStr = "local"; ServerMessages = [||]; SpanCls = Blue}, Cmd.none
+
+  {LocalStr = ""; ServerMessages = [||]; SpanCls = Blue}, Cmd.none
 
 let update msg model =
   match msg with
   | ChangeStr s ->
-    printfn "Local string is getting changed"
-    let updatedModel = {model with LocalStr = s}
+    {model with LocalStr = s}, Cmd.none
+  | ChangeColor s ->
+    {model with SpanCls = s}, Cmd.none
+  | PreparePost ->
     let inputMessage = dtos.InputMessage.Create()
     let message = dtos.Message.Create()
-    message.color <- updatedModel.SpanCls.ToString()
-    message.data <- updatedModel.LocalStr
+    message.color <- model.SpanCls.ToString()
+    message.data <- model.LocalStr
     inputMessage.created <- DateTime.Now.ToString()
     inputMessage.userId <- 0.
     inputMessage.message <- message
     let postCmd = Cmd.ofMsg (PostMessage inputMessage)
-    updatedModel, postCmd
-  | ChangeColor s ->
-    printfn "Color is changing"
-    let updatedModel = {model with SpanCls = s}
-    updatedModel, Cmd.none
+    model,postCmd
   | PostMessage pm ->
     let msgPost (msg : InputMessage) =
       client.post (msg :> IReturn<OutPutMessages>)
@@ -43,6 +70,8 @@ let update msg model =
     let msgCmd = helloCmd pm
     model, msgCmd
   | SuccessMessages o ->
+    {model with ServerMessages = o.data.ToArray(); LocalStr = ""}, Cmd.none
+  | SSESuccessMessages o ->
     {model with ServerMessages = o.data.ToArray()}, Cmd.none
   | Failed exn ->
     model, Cmd.none

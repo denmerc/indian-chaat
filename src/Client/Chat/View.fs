@@ -1,4 +1,4 @@
-module Counter.View
+module Chat.View
 
 open Fable.Core
 open JsInterop
@@ -11,18 +11,22 @@ open Fulma.Elements
 
 
 
+
 let root model dispatch =
   div [] [
     Content.content [] [
-      p [] [
+      ul [] [
         for m in model.ServerMessages do
-          yield span [ClassName m.color][str m.data]
+          yield
+            li[][
+              span [ClassName m.color][str m.data]
+            ]
       ]
     ]
 
     br []
     br []
-    p [ClassName (model.SpanCls.ToString())] [str (sprintf "local string %s" model.LocalStr)]
+    p [ClassName (model.SpanCls.ToString())] [str (sprintf "local message %s" model.LocalStr)]
 
 
     Control.control_div [] [
@@ -73,7 +77,12 @@ let root model dispatch =
         Input.typeIsText
         Input.placeholder "AddSomething"
         Input.value model.LocalStr
-        Input.props [OnChange (fun ev -> !!ev.target?value |> ChangeStr |> dispatch)]
+        Input.props [
+          OnChange (fun ev -> !!ev.target?value |> ChangeStr |> dispatch)
+          ]
       ]
     ]
+    Button.button_btn [
+      Button.onClick (fun _ -> PreparePost |> dispatch)
+    ] [str "Post"]
   ]

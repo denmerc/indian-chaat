@@ -2,7 +2,7 @@
 module rec Fable.Import.IndianChaat
 open System
 open Fable.Core
-open Fable.Import.JS
+open Fable.Import
 open SSClient
 
 

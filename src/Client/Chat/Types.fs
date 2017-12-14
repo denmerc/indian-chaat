@@ -1,4 +1,4 @@
-module Counter.Types
+module Chat.Types
 open Fable.Core
 open Fable.Import.IndianChaat
 
@@ -17,6 +17,8 @@ type Model =  {
 type Msg =
   | ChangeStr of string
   | ChangeColor of SpanCls
+  | PreparePost
   | PostMessage of InputMessage
   | SuccessMessages of OutPutMessages
+  | SSESuccessMessages of OutPutMessages
   | Failed of exn

@@ -6,6 +6,9 @@ open ServiceStack
 open System
 open ServiceStack.Configuration
 open ServiceStack
+open Helper.ChaatHelper
+
+
 
 
 
@@ -15,5 +18,5 @@ type ServerEventsServices() =
     inherit Service()
 
     member __.Post(request : InputMessage) =
-        //do something
-        {Data = [|request.Message|]} |> box
+        chaatAgent.Post request
+        {Data = storage.ToArray()} |> box
