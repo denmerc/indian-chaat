@@ -1,7 +1,7 @@
 module Navbar.View
 
 open Fable.Helpers.React
-open Fable.Helpers.React.Props
+open Props
 
 let navButton classy href faClass txt =
     p

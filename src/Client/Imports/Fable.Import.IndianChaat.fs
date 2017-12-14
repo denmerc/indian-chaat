@@ -3,6 +3,7 @@ module rec Fable.Import.IndianChaat
 open System
 open Fable.Core
 open Fable.Import.JS
+open Fable.Import.SSClient
 
 
 type [<AllowNullLiteral>] IExports =
@@ -11,11 +12,11 @@ type [<AllowNullLiteral>] IExports =
     abstract Hello: HelloStatic
     abstract ClearChatHistory: ClearChatHistoryStatic
 
-type [<AllowNullLiteral>] IReturn<'T> =
-    abstract createResponse: unit -> 'T
+// type [<AllowNullLiteral>] IReturn<'T> =
+//     abstract createResponse: unit -> 'T
 
-type [<AllowNullLiteral>] IReturnVoid =
-    abstract createResponse: unit -> unit
+// type [<AllowNullLiteral>] IReturnVoid =
+//     abstract createResponse: unit -> unit
 
 type [<RequireQualifiedAccess>] CacheControl =
     | None = 0

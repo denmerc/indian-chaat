@@ -33,7 +33,7 @@ let menu currentPage =
       ul
         [ ClassName "menu-list" ]
         [ menuItem "Home" Home currentPage
-          menuItem "Counter sample" Counter currentPage
+          menuItem "Chat sample" Counter currentPage
           menuItem "About" Page.About currentPage ] ]
 
 let root model dispatch =

@@ -15,10 +15,18 @@ let root model dispatch =
             [ ClassName "input"
               Type "text"
               Placeholder "Type your name"
-              DefaultValue model
+              DefaultValue model.Current
               AutoFocus true
               OnChange (fun ev -> !!ev.target?value |> ChangeStr |> dispatch ) ] ]
+      button[OnClick (fun _ -> (hello.name <- model.Current; hello) |> Req |> dispatch)][str "Server Hello"]
       br [ ]
       span
         [ ]
-        [ str (sprintf "Hello ji %s" model) ] ]
+        [ str (sprintf "Hello ji %s" model.Current) ]
+      br []
+      span [] [
+        str (sprintf "Server says: %s" model.Server)
+      ]
+    ]
+
+
